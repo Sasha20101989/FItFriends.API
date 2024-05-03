@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FitFriends.Logic\FitFriends.Logic.csproj" />
+  </ItemGroup>
+
 </Project>
