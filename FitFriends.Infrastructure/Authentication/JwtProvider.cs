@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FitFriends.Infrastructure
+namespace FitFriends.Infrastructure.Authentication
 {
     public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
     {
@@ -13,7 +13,11 @@ namespace FitFriends.Infrastructure
 
         public string GenerateToken(User user)
         {
-            Claim[] claims = [new("userId", user.Id.ToString()), new("email", user.Email)];
+            Claim[] claims =
+            [
+                new(CustomClaims.UserId, user.Id.ToString()),
+                new(CustomClaims.UserEmail, user.Email),
+            ];
 
             SigningCredentials signingCredentials = new(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),

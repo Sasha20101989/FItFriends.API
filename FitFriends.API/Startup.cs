@@ -2,7 +2,12 @@
 using FitFriends.API.Middlewares;
 using FitFriends.Application.Interfaces.Auth;
 using FitFriends.Infrastructure;
+using FitFriends.Infrastructure.Authentication;
+using FitFriends.Logic.Enums;
+using FitFriends.Persistence.Mappings;
+using FitFriends.Persistence.Repositories;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitFriends.API
 {
@@ -11,6 +16,7 @@ namespace FitFriends.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+            services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
 
             services.AddControllers();
             services.AddSwaggerGen();
@@ -25,6 +31,14 @@ namespace FitFriends.API
 
             services.AddScoped<IJwtProvider, JwtProvider>();    
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+            services.AddAutoMapper(typeof(DbMappingProfile));
+
+            services.AddDbContext<FitFriendsDbContext>(
+                options =>
+                {
+                    options.UseNpgsql(configuration.GetConnectionString(nameof(FitFriendsDbContext)));
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

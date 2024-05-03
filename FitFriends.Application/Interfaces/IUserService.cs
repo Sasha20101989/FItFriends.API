@@ -1,6 +1,4 @@
-﻿using FitFriends.Logic.Models;
-
-namespace FitFriends.Application.Interfaces
+﻿namespace FitFriends.Application.Interfaces
 {
     public interface IUserService
     {

@@ -1,4 +1,5 @@
-﻿using FitFriends.Logic.Models;
+﻿using FitFriends.Logic.Enums;
+using FitFriends.Logic.Models;
 
 namespace FitFriends.Persistence.Repositories
 {
@@ -7,5 +8,7 @@ namespace FitFriends.Persistence.Repositories
         Task AddAsync(User user);
 
         Task<User> GetByEmailAsync(string email);
+
+        Task<HashSet<Permission>> GetUserPermissionsAsync(Guid userId);
     }
 }

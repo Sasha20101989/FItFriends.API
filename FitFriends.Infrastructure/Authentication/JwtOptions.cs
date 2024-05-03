@@ -1,4 +1,4 @@
-﻿namespace FitFriends.Infrastructure
+﻿namespace FitFriends.Infrastructure.Authentication
 {
     public class JwtOptions
     {

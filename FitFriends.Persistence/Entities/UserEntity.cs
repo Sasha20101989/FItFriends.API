@@ -1,11 +1,15 @@
-﻿
-namespace FitFriends.Persistence.Entities
+﻿namespace FitFriends.Persistence.Entities
 {
     public class UserEntity
     {
-        public Guid Id { get; internal set; }
-        public string UserName { get; internal set; }
-        public string PasswordHash { get; internal set; }
-        public string Email { get; internal set; }
+        public Guid Id { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
+
+        public string PasswordHash { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public ICollection<RoleEntity> Roles { get; set; } = [];
     }
 }

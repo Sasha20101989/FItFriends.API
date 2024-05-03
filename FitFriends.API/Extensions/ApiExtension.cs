@@ -1,10 +1,11 @@
 ﻿using FitFriends.API.Middlewares;
 using FitFriends.Application.Interfaces;
 using FitFriends.Application.Services;
-using FitFriends.Infrastructure;
+using FitFriends.Infrastructure.Authentication;
+using FitFriends.Logic.Enums;
 using FitFriends.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -39,29 +40,36 @@ namespace FitFriends.API.AppExtensions
         {
             JwtOptions? jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters = new()
                 {
-                    options.TokenValidationParameters = new()
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(jwtOptions!.SecretKey))
-                    };
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtOptions!.SecretKey))
+                };
 
-                    options.Events = new()
+                options.Events = new()
+                {
+                    OnMessageReceived = context =>
                     {
-                        OnMessageReceived = context =>
-                        {
-                            context.Token = context.Request.Cookies["is-not-token"];
+                        context.Token = context.Request.Cookies["is-not-token"];
 
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            services.AddScoped<IPermissionService, PermissionService>();
 
             services.AddAuthorization();
 
